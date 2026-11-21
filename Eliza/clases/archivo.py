@@ -3,7 +3,6 @@
 import os
 from clases.persona import Persona
 
-
 class Archivo:
     """Se encarga de guardar y cargar las personas en archivos de texto.
 

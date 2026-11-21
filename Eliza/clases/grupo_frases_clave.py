@@ -33,6 +33,8 @@ class GrupoFrasesClave:
         palabras = separar_palabras(texto)
         partes = frase.split()
         i = 0
+
+        # Recorre las posiciones donde podría comenzar la frase clave.
         while i + len(partes) <= len(palabras):
             coincide = True
             j = 0

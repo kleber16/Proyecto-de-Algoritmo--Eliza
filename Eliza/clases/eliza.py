@@ -45,6 +45,9 @@ class Eliza:
             print("Error: no se pudieron descargar los datos. Revisa tu conexion a internet.")
             return False
         try:
+
+            # Crea los grupos de frases clave con los datos del JSON.
+            # Crea los grupos de respuestas con los datos del JSON.
             for nombre in entrada:
                 grupo = entrada[nombre]
                 nuevo = GrupoFrasesClave(nombre, grupo["Prioridad"], grupo["Frases clave"])
@@ -109,6 +112,11 @@ class Eliza:
         mencionadas = self.registrar_personas(texto)
         grupo = self.buscar_frase_clave(texto)
 
+        # Las perdidas reciben un pesame aunque haya una pregunta pendiente.
+        if grupo is not None and grupo.get_prioridad() == 2:
+            return self.elegir_respuesta(grupo.get_nombre())
+
+
         # Prioridad 1: despedida (guarda los datos y termina)
         if grupo != None and grupo.get_prioridad() == 1:
             self.guardar_datos()
@@ -126,7 +134,8 @@ class Eliza:
                 return self.guardar_dato(persona, valor)
 
             return "Disculpa, no entendí ese dato. " + self.preguntar_dato_faltante()
-
+        
+            # Busca una persona mencionada que tenga datos incompletos.
         if len(mencionadas) > 0:
 
             if grupo != None and grupo.get_prioridad() != 3:
@@ -164,7 +173,9 @@ class Eliza:
             return self.preguntar_dato_faltante()
 
         return self.elegir_respuesta(grupo.get_nombre())
-    
+
+     # Recorre las prioridades de mayor a menor importancia.
+    # Busca coincidencias en los grupos de la prioridad actual.
     def buscar_frase_clave(self, texto):
         """Busca el grupo de frases clave de mayor prioridad (numero mas bajo)
         que aparezca en el texto. Revisa todo el grupo de prioridad 1 antes de
@@ -193,6 +204,9 @@ class Eliza:
         Devuelve la lista de personas mencionadas en este mensaje.
         Eficiencia: O(k * p * f) con k = frases de prioridad 3."""
         mencionadas = []
+
+        # Recorre los grupos para encontrar los de prioridad 3.
+        # Recorre las frases encontradas para identificar la relación de cada persona.
         for grupo in self.__grupos_frases:
             if grupo.get_prioridad() == 3:
                 for frase in grupo.frases_encontradas(texto):
